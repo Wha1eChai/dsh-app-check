@@ -1,0 +1,20 @@
+{
+  "name": "@wha1echai/dsh-app-check-fixture",
+  "version": "0.0.0",
+  "packageManager": "pnpm@11.7.0",
+  "engines": {
+    "node": "^22.19.0 || >=24.0.0"
+  },
+  "dsh": {
+    "client": {
+      "inject": ["@wha1echai/dsh-webpage"],
+      "platform": "web"
+    },
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "peerDependencies": {
+    "@wha1echai/dsh-webpage": "0.1.0"
+  }
+}

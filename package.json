@@ -1,0 +1,30 @@
+{
+  "name": "@wha1echai/dsh-app-check",
+  "version": "1.0.0",
+  "description": "Executable authoring-contract checks for DSH Webpage Apps",
+  "type": "module",
+  "license": "MIT",
+  "packageManager": "pnpm@11.7.0",
+  "engines": {
+    "node": "^22.19.0 || >=24.0.0"
+  },
+  "bin": {
+    "dsh-app-check": "./src/cli.mjs"
+  },
+  "exports": {
+    ".": "./src/index.mjs",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "test": "node test/self-test.mjs"
+  },
+  "dshAppContract": 1,
+  "publishConfig": {
+    "access": "public"
+  }
+}
