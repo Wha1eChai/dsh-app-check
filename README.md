@@ -1,51 +1,73 @@
 # @wha1echai/dsh-app-check
 
-Executable authoring-contract checks for DSH Webpage Apps.
+Executable authoring-contract checks for DSH Webpage Apps. The package major version tracks the authoring contract version (currently `1`); a DSH target bump raises both. `--version` prints `contract: 1`.
 
-**Contract version is this package's major version** (currently `1`). A DSH target bump (rc.6 → rc.7) raises the contract and this major; re-run the kit instead of re-reading kernel source. `--version` prints `contract: 1`.
-
-This release is the check core only (`--lint` / `--pack`). tsdown and vitest presets are a later slice.
+This release is the check core only (`--lint` / `--pack`). It does not ship tsdown or vitest presets.
 
 ## What it checks
 
-`--lint` — package name, inject list, bundle patch, DSH/cordis pins, source trailing whitespace, `codeSplitting: false`, patch hygiene, and (by default) the jobs-superset manifest and source rules.
+`--lint` — package name, `dsh.client.inject`, bundle patch, DSH and cordis pins, source trailing whitespace, `codeSplitting: false`, patch hygiene, and every `require` flag that is left on.
 
-`--pack` — lint, plus built artifact shape (`apply` only, Loader handoff, client externals whitelist) and `pnpm pack` + `tar -tzf` against an exact allowlist.
+`--pack` — lint, plus built artifact shape (`apply` only, Loader handoff, client externals whitelist) and `pnpm pack` + `tar -tzf` against an exact allowlist. Archives are listed from the archive directory so Git's GNU tar does not treat a Windows drive letter as a remote host.
 
-Shared, not configurable: DSH `0.1.0-rc.6`, cordis `4.0.1`, the 11 client externals, trailing-whitespace scan, `codeSplitting: false`, Node exports `["apply"]`, Corepack fallback to pnpm `11.7.0` (nested `pnpm run` may resolve `11.0.9`).
+Shared, not configurable: DSH `0.1.0-rc.6`, cordis `4.0.1`, the 11 client externals, trailing-whitespace scan, `codeSplitting: false`, Node exports `["apply"]`, Corepack fallback to pnpm `11.7.0`.
 
-## Usage
+## Requirements
+
+- DSH `0.1.0-rc.6` (the contract target the kit pins consumers to)
+- Node `^22.19.0 || >=24.0.0`
+- pnpm `11.7.0`
+
+## Consume
+
+Nothing in this family is published to npm yet. App repos currently depend on this package as `file:../dsh-app-check`. The documented entry is a thin wrapper; the migrated Apps (usage, notes, jobs) all use it:
 
 ```js
-// package.json
+// scripts/check.mjs
+import { run } from '@wha1echai/dsh-app-check'
+
+const mode = process.argv.find(arg => arg.startsWith('--'))
+await run(import.meta.url, mode)
+```
+
+```json
 {
   "scripts": {
-    "lint": "dsh-app-check --lint",
-    "pack:verify": "dsh-app-check --pack"
+    "lint": "node scripts/check.mjs --lint",
+    "pack:verify": "node scripts/check.mjs --pack"
   },
   "devDependencies": {
-    "@wha1echai/dsh-app-check": "1.0.0"
+    "@wha1echai/dsh-app-check": "file:../dsh-app-check"
   }
 }
 ```
 
-Thin wrapper (same modes):
+`dsh-app-check --lint` (the package bin) is an alternative that runs the same `run()` against `process.cwd()`.
 
-```js
-import { run } from '@wha1echai/dsh-app-check'
-await run(import.meta.url, process.argv.find(arg => arg.startsWith('--')))
-```
+On machines where nested `pnpm run` resolves pnpm `11.0.9` against `packageManager: pnpm@11.7.0`, invoke the scripts directly: `node scripts/check.mjs --lint`, `node scripts/check.mjs --pack`.
 
 ## Config
 
 `dsh-app-check.config.mjs` at the App repo root, default-exporting:
 
-- `name` (required) — must match `package.json` `name`
-- `expectedClientInject` (required) — exact `dsh.client.inject` array
-- `packedAllowlist` (required) — exact packed path set
-- `patchMustInclude` — extra patch needles; own `name: '<name>'` is always required
-- `patchMustNotInclude` — extra forbidden needles; `name: '@wha1echai/dsh-webpage'` is always forbidden
-- `allowFileDshPins` — default `false`; when `true`, `@deepseek-ai/dsh*` may be `file:`
-- `require` — boolean flags, **all default on**
+| Field | Required | Notes |
+| --- | --- | --- |
+| `name` | yes | Must match `package.json` `name` |
+| `expectedClientInject` | yes | Exact `dsh.client.inject` array |
+| `packedAllowlist` | yes | Exact packed path set |
+| `patchMustInclude` | no | Extra patch needles; own `name: '<name>'` is always required |
+| `patchMustNotInclude` | no | Extra forbidden needles; `name: '@wha1echai/dsh-webpage'` is always forbidden |
+| `allowFileDshPins` | no | Default `false`; when `true`, `@deepseek-ai/dsh*` may be `file:` |
+| `require` | no | Boolean flags; all default to on |
 
 `require` flags: `publishable`, `packageManager`, `enginesNode`, `clientPlatformWeb`, `webpagePeer`, `noWorkspaceRanges`, `noAdjacentCheckout`, `noForbiddenUi`, `localeZhEn`, `invariantExport`, `clientExport`, `noNodeDefaultExport`, `clientCssInjection`, `singleTarball`, `noPrepare`.
+
+## Verify
+
+```powershell
+node test/self-test.mjs
+```
+
+## Family
+
+The platform repository [dsh-webpage](https://github.com/Wha1eChai/dsh-webpage) holds the kernel, the authoring contract, and the docs. Apps live in their own repositories on purpose.
