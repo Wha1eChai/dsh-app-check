@@ -1,5 +1,5 @@
 {
-  "name": "@wha1echai/dsh-app-check",
+  "name": "@dshapps/app-check",
   "version": "1.0.0",
   "description": "Executable authoring-contract checks for DSH Webpage Apps",
   "type": "module",

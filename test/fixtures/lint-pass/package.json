@@ -1,5 +1,5 @@
 {
-  "name": "@wha1echai/dsh-app-check-fixture",
+  "name": "@dshapps/app-check-fixture",
   "version": "0.0.0",
   "packageManager": "pnpm@11.7.0",
   "engines": {
@@ -7,7 +7,7 @@
   },
   "dsh": {
     "client": {
-      "inject": ["@wha1echai/dsh-webpage"],
+      "inject": ["@dshapps/webpage"],
       "platform": "web"
     },
     "bundle": {
@@ -15,6 +15,6 @@
     }
   },
   "peerDependencies": {
-    "@wha1echai/dsh-webpage": "0.1.0"
+    "@dshapps/webpage": "0.2.0"
   }
 }

@@ -1,4 +1,4 @@
-# @wha1echai/dsh-app-check
+# @dshapps/app-check
 
 Executable authoring-contract checks for DSH Webpage Apps. The package major version tracks the authoring contract version (currently `1`); a DSH target bump raises both. `--version` prints `contract: 1`.
 
@@ -24,7 +24,7 @@ Nothing in this family is published to npm yet. App repos currently depend on th
 
 ```js
 // scripts/check.mjs
-import { run } from '@wha1echai/dsh-app-check'
+import { run } from '@dshapps/app-check'
 
 const mode = process.argv.find(arg => arg.startsWith('--'))
 await run(import.meta.url, mode)
@@ -37,7 +37,7 @@ await run(import.meta.url, mode)
     "pack:verify": "node scripts/check.mjs --pack"
   },
   "devDependencies": {
-    "@wha1echai/dsh-app-check": "file:../dsh-app-check"
+    "@dshapps/app-check": "file:../dsh-app-check"
   }
 }
 ```
@@ -56,7 +56,7 @@ On machines where nested `pnpm run` resolves pnpm `11.0.9` against `packageManag
 | `expectedClientInject` | yes | Exact `dsh.client.inject` array |
 | `packedAllowlist` | yes | Exact packed path set |
 | `patchMustInclude` | no | Extra patch needles; own `name: '<name>'` is always required |
-| `patchMustNotInclude` | no | Extra forbidden needles; `name: '@wha1echai/dsh-webpage'` is always forbidden |
+| `patchMustNotInclude` | no | Extra forbidden needles; `name: '@dshapps/webpage'` is always forbidden |
 | `allowFileDshPins` | no | Default `false`; when `true`, `@deepseek-ai/dsh*` may be `file:` |
 | `require` | no | Boolean flags; all default to on |
 

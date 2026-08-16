@@ -1,5 +1,5 @@
 export default {
-  name: '@wha1echai/dsh-app-check-fixture',
-  expectedClientInject: ['@wha1echai/dsh-webpage'],
+  name: '@dshapps/app-check-fixture',
+  expectedClientInject: ['@dshapps/webpage'],
   packedAllowlist: ['package/package.json'],
 }

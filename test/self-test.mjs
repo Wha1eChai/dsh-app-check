@@ -124,7 +124,7 @@ await test('validateConfig rejects unknown require flags and non-booleans', asyn
 await test('validateConfig fills defaults', () => {
   const config = validateConfig({
     name: '@scope/app',
-    expectedClientInject: ['@wha1echai/dsh-webpage'],
+    expectedClientInject: ['@dshapps/webpage'],
     packedAllowlist: ['package/package.json'],
   })
   assert(config.allowFileDshPins === false, 'allowFileDshPins should default false')
