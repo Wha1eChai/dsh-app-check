@@ -76,4 +76,4 @@ node test/self-test.mjs
 
 ## Family
 
-The platform repository [dsh-webpage](https://github.com/Wha1eChai/dsh-webpage) holds the kernel, the authoring contract, and the docs. Start a new App from [dsh-app-template](https://github.com/Wha1eChai/dsh-app-template). Apps live in their own repositories on purpose.
+The platform repository [dsh-webpage](https://github.com/dshapps/dsh-webpage) holds the kernel, the authoring contract, and the docs. Start a new App from [dsh-app-template](https://github.com/dshapps/dsh-app-template). Apps live in their own repositories on purpose.
