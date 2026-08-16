@@ -64,7 +64,7 @@ await test('CONTRACT_VERSION is 1', () => {
 
 await test('require defaults are all on', () => {
   const keys = Object.keys(REQUIRE_DEFAULTS)
-  assert(keys.length === 15, `expected 15 require flags, got ${keys.length}`)
+  assert(keys.length === 18, `expected 18 require flags, got ${keys.length}`)
   for (const key of keys) {
     assert(REQUIRE_DEFAULTS[key] === true, `${key} should default on`)
   }
@@ -152,6 +152,33 @@ await test('lint fails on trailing whitespace', async () => {
   const directory = copyFailFixture()
   writeFileSync(join(directory, 'README.md'), 'hello  \n')
   await assertThrows(() => run(directory, '--lint'), 'trailing whitespace')
+})
+
+await test('lint fails when bundle patch is missing', async () => {
+  const directory = copyFailFixture()
+  const manifestPath = join(directory, 'package.json')
+  const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'))
+  delete manifest.dsh.bundle
+  writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`)
+  await assertThrows(() => run(directory, '--lint'), 'dsh.bundle.patch is missing')
+})
+
+await test('lint allows a workspace-root loader preset when loaderPreset is off', async () => {
+  const directory = copyFailFixture()
+  rmSync(join(directory, 'tsdown.client.ts'))
+  writeFileSync(join(directory, 'dsh-app-check.config.mjs'), `${readFileSync(join(passFixture, 'dsh-app-check.config.mjs'), 'utf8').replace('export default {', 'export default {\n  require: { loaderPreset: false },')}`)
+  await run(directory, '--lint')
+})
+
+await test('lint allows a missing bundle patch when bundlePatch is off', async () => {
+  const directory = copyFailFixture()
+  const manifestPath = join(directory, 'package.json')
+  const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'))
+  delete manifest.dsh.bundle
+  writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`)
+  writeFileSync(join(directory, 'dsh-app-check.config.mjs'), `${readFileSync(join(passFixture, 'dsh-app-check.config.mjs'), 'utf8').replace('export default {', 'export default {\n  require: { bundlePatch: false },')}`)
+  rmSync(join(directory, 'cordis.patch.yml'))
+  await run(directory, '--lint')
 })
 
 await test('lint fails when prepare is present', async () => {

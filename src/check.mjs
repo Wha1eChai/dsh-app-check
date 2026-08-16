@@ -85,7 +85,7 @@ export async function assertManifest(root, config, tools) {
   if (req.packageManager) assert(manifest.packageManager === PACKAGE_MANAGER, `packageManager must be ${PACKAGE_MANAGER}`)
   if (req.enginesNode) assert(manifest.engines?.node === ENGINES_NODE, 'Node engine is not the frozen range')
   if (req.clientPlatformWeb) assert(manifest.dsh?.client?.platform === 'web', 'dsh.client.platform must be web')
-  assert(manifest.dsh?.bundle?.patch === './cordis.patch.yml', 'dsh.bundle.patch is missing')
+  if (req.bundlePatch) assert(manifest.dsh?.bundle?.patch === './cordis.patch.yml', 'dsh.bundle.patch is missing')
   assert(JSON.stringify(manifest.dsh?.client?.inject) === JSON.stringify(config.expectedClientInject), 'dsh.client.inject changed')
   if (req.webpagePeer) {
     assert(manifest.peerDependencies?.[WEBPAGE_NAME] === WEBPAGE_PEER, `webpage peer must be ${WEBPAGE_PEER}`)
@@ -135,19 +135,23 @@ export async function assertSources(root, config, tools) {
       assert(!FORBIDDEN_UI.test(text), `forbidden UI/router dependency in ${file}`)
     }
   }
-  const preset = await readFile(join(root, 'tsdown.client.ts'), 'utf8')
-  assert(preset.includes('codeSplitting: false'), 'client preset must disable code splitting; the DSH Loader cannot load async chunks')
-  const patch = await readFile(join(root, 'cordis.patch.yml'), 'utf8')
-  const mustInclude = [`name: '${config.name}'`, ...config.patchMustInclude]
-  const mustNotInclude = [`name: '${WEBPAGE_NAME}'`, ...config.patchMustNotInclude]
-  for (const needle of mustInclude) {
-    assert(patch.includes(needle), `pack must list ${needle}`)
+  if (req.loaderPreset) {
+    const preset = await readFile(join(root, 'tsdown.client.ts'), 'utf8')
+    assert(preset.includes('codeSplitting: false'), 'client preset must disable code splitting; the DSH Loader cannot load async chunks')
   }
-  for (const needle of mustNotInclude) {
-    const message = needle.includes(WEBPAGE_NAME)
-      ? 'pack must not re-insert webpage; webpage is installed first'
-      : `pack must not include ${needle}`
-    assert(!patch.includes(needle), message)
+  if (req.bundlePatch) {
+    const patch = await readFile(join(root, 'cordis.patch.yml'), 'utf8')
+    const mustInclude = [`name: '${config.name}'`, ...config.patchMustInclude]
+    const mustNotInclude = [`name: '${WEBPAGE_NAME}'`, ...config.patchMustNotInclude]
+    for (const needle of mustInclude) {
+      assert(patch.includes(needle), `pack must list ${needle}`)
+    }
+    for (const needle of mustNotInclude) {
+      const message = needle.includes(WEBPAGE_NAME)
+        ? 'pack must not re-insert webpage; webpage is installed first'
+        : `pack must not include ${needle}`
+      assert(!patch.includes(needle), message)
+    }
   }
   if (req.localeZhEn) {
     const locale = await readFile(join(root, 'src', 'client', 'locales.ts'), 'utf8')
@@ -182,7 +186,10 @@ export async function assertBuilt(root, config, tools) {
   }
   const stamp = checkLabel(config.name)
   const nodeModule = await import(`${pathToFileURL(nodePath).href}?${stamp}=${Date.now()}`)
-  assert(JSON.stringify(Object.keys(nodeModule).sort()) === NODE_EXPORT_KEYS, `Node exports must be named apply only, got ${Object.keys(nodeModule)}`)
+  assert(typeof nodeModule.apply === 'function', 'Node entry must export apply')
+  if (req.applyOnlyExport) {
+    assert(JSON.stringify(Object.keys(nodeModule).sort()) === NODE_EXPORT_KEYS, `Node exports must be named apply only, got ${Object.keys(nodeModule)}`)
+  }
   if (req.noNodeDefaultExport) {
     assert(nodeModule.default === undefined, 'Node entry must not have a default export')
   }

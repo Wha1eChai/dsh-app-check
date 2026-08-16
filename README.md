@@ -60,7 +60,13 @@ On machines where nested `pnpm run` resolves pnpm `11.0.9` against `packageManag
 | `allowFileDshPins` | no | Default `false`; when `true`, `@deepseek-ai/dsh*` may be `file:` |
 | `require` | no | Boolean flags; all default to on |
 
-`require` flags: `publishable`, `packageManager`, `enginesNode`, `clientPlatformWeb`, `webpagePeer`, `noWorkspaceRanges`, `noAdjacentCheckout`, `noForbiddenUi`, `localeZhEn`, `invariantExport`, `clientExport`, `noNodeDefaultExport`, `clientCssInjection`, `singleTarball`, `noPrepare`.
+`require` flags: `publishable`, `packageManager`, `enginesNode`, `clientPlatformWeb`, `webpagePeer`, `noWorkspaceRanges`, `noAdjacentCheckout`, `noForbiddenUi`, `localeZhEn`, `bundlePatch`, `loaderPreset`, `applyOnlyExport`, `invariantExport`, `clientExport`, `noNodeDefaultExport`, `clientCssInjection`, `singleTarball`, `noPrepare`.
+
+`bundlePatch` (default on) requires `dsh.bundle.patch: ./cordis.patch.yml` on the App package and that the patch insert only this plugin. Heavy-service Bundles that own the patch on a sibling pack package turn it off.
+
+`loaderPreset` (default on) requires `tsdown.client.ts` at the App package root with `codeSplitting: false`. Monorepos that keep the Loader preset at the workspace root turn it off; `--pack` still checks the built `lib/client.js` for the Loader handoff.
+
+`applyOnlyExport` (default on) requires the Node entry to export only `apply`. Host-service packages that also publish a public API turn it off; `apply` itself remains required.
 
 ## Verify
 
