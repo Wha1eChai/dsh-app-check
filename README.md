@@ -1,6 +1,8 @@
 # @dshapps/app-check
 
-Executable authoring-contract checks for DSH Webpage Apps. The package major version tracks the authoring contract version (currently `1`); a DSH target bump raises both. `--version` prints `contract: 1`.
+English | [中文](README.zh.md)
+
+The authoring contract as a command. Major version is the contract version (currently `1`); a DSH target bump raises both. `--version` prints `contract: 1`.
 
 This release is the check core only (`--lint` / `--pack`). It does not ship tsdown or vitest presets.
 
@@ -77,3 +79,5 @@ node test/self-test.mjs
 ## Family
 
 The platform repository [dsh-webpage](https://github.com/dshapps/dsh-webpage) holds the kernel, the authoring contract, and the docs. Start a new App from [dsh-app-template](https://github.com/dshapps/dsh-app-template). Apps live in their own repositories on purpose.
+
+Licensed under the [MIT License](LICENSE).
